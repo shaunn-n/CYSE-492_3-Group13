@@ -184,7 +184,6 @@ class VLMDetector(Node):
                 self.publish_status("INCOMING")
                 break
 
-            if answer == "YES" and 
 
             elif answer == "NO":
                 self.publish_status("CLEAR")
