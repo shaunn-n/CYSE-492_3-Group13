@@ -159,9 +159,10 @@ class VLMDetector(Node):
                 break
 
             if answer == "YES" and model_name == "aeline/opan:latest":
+                self.get_logger().info("Robot detected. Sending INCOMING.")
                 self.publish_status("INCOMING")
-                self.publish_status("INCOMING")
-                self.publish_status("INCOMING")
+                self.get_logger().info("Keeping publisher alive for 3 seconds.")
+                time.sleep(3)
                 break
 
             elif answer == "NO":
