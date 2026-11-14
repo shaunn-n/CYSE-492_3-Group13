@@ -4,12 +4,12 @@ import time
 import cv2
 import rclpy
 import json
+import subprocess
 
 from ollama import chat
 from webcam import Webcam
 from rclpy.node import Node
 from std_msgs.msg import String
-from rclpy.duration import Duration
 
 
 class VLMDetector(Node):
@@ -155,18 +155,36 @@ class VLMDetector(Node):
             self.get_logger().info(f'Ollama answer: {answer}')
 
             # Publish status
+            # For Qwen3 and aeline/opan publish INCOMING using manual terminal command
             if answer == "YES":
+                if model_name == "aeline/opan:latest":
+                    self.get_logger().info("Robot detected. Sending INCOMING.")
+
+                    subprocess.run([
+                        "ros2", "topic", "pub", "--once",
+                        "/detection_status",
+                        "std_msgs/msg/String",
+                        "{data: INCOMING}"
+                    ], check=True, timeout=10)
+
+                    break
+
+                if model_name == "qwen3-vl:2b":
+                    self.get_logger().info("Robot detected. Sending INCOMING.")
+
+                    subprocess.run([
+                        "ros2", "topic", "pub", "--once",
+                        "/detection_status",
+                        "std_msgs/msg/String",
+                        "{data: INCOMING}"
+                    ], check=True, timeout=10)
+
+                    break
+
                 self.publish_status("INCOMING")
-                acknowledged = self.publisher_.wait_for_all_acked(Duration(seconds=3))
-                self.get_logger().info(f"INCOMING acknowledged: {acknowledged}")
                 break
 
-            # if answer == "YES" and model_name == "aeline/opan:latest":
-            #     self.get_logger().info("Robot detected. Sending INCOMING.")
-            #     self.publish_status("INCOMING")
-            #     self.get_logger().info("Keeping publisher alive for 3 seconds.")
-            #     time.sleep(3)
-            #     break
+            if answer == "YES" and 
 
             elif answer == "NO":
                 self.publish_status("CLEAR")
